@@ -1,0 +1,20 @@
+@startuml
+actor "Operator" as Operator
+participant "MES" as MES
+participant "DB Cache" as DBCache
+participant "MES DB" as DB
+
+Operator -> MES: 1. Request order details (e.g., GET /order/{order_id})
+MES -> DBCache: 2. Read {order_id} (Read-Through)
+DBCache -> DBCache: 3. Check cache for {order_id}
+alt Cache hit
+    DBCache -> MES: 4. Return cached {order_id} data
+else Cache miss
+    DBCache -> DB: 5. Fetch {order_id} from DB
+    DB -> DBCache: 6. Return {order_id} data
+    DBCache -> DBCache: 7. Cache {order_id} data
+    DBCache -> MES: 8. Return {order_id} data
+end
+MES -> Operator: 9. Display order details
+
+@enduml

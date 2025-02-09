@@ -1,0 +1,16 @@
+@startuml
+actor "Operator" as Operator
+participant "MES" as MES
+participant "DB Cache" as DBCache
+participant "MES DB" as DB
+
+Operator -> MES: 1. Update order status (e.g., PUT /order/{order_id})
+MES -> DBCache: 2. Write order update (Write-Through)
+DBCache -> DB: 3. Update order in DB
+DB -> DB: 4. Update order data
+DB -> DBCache: 5. Confirm update
+DBCache -> DBCache: 6. Update cache for {order_id}
+DBCache -> MES: 7. Confirm order update
+MES -> Operator: 8. Show success message
+
+@enduml
